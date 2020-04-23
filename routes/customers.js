@@ -1,25 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+const Customer = require('../models/customer');
 const { validateCustomer } = require('./../middleware/Helpers');
 router.use(express.json());
-
-// Customer Schema
-const customerSchema = new mongoose.Schema({
-	name: {
-		type: String,
-		required: true,
-		minLength: 3,
-		maxLength: 50,
-	},
-	phone: { type: String, minLength: 6, maxLength: 30, required: true },
-	isGold: {
-		type: Boolean,
-		default: false,
-	},
-});
-
-const Customer = mongoose.model('Customer', customerSchema);
 
 // Routes for showing all Customers
 router.get('/', async (req, res) => {
