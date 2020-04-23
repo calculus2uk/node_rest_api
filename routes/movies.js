@@ -19,7 +19,7 @@ const movieShema = new mongoose.Schema({
 	},
 });
 
-const Movie = new mongoose.model('Movie', movieShema);
+const Movie = mongoose.model('Movie', movieShema);
 /*const movies = [
 	{ id: 1, genre: 'Action', name: 'Die Hard' },
 	{ id: 2, genre: 'Commedy', name: 'Wedding Ringer' },
@@ -33,15 +33,14 @@ router.get('/', async (req, res) => {
 });
 
 // Routes for showing One Movie based on ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 	//1. Check if the movie exist
 
-	const movie = movies.find((movie) => movie.id === id);
+	const movie = await Movie.findById(req.params.id);
 
 	//2. If not return a 404 error
-	if (!movie) {
+	if (!movie)
 		return res.status(404).send('Sorry there is no movie with that id');
-	}
 
 	//3. Show the movie based on the ID
 	res.send(JSON.stringify(movie));
@@ -83,25 +82,19 @@ router.put('/:id', async (req, res) => {
 
 	if (!movie) return res.status(400).send('The movie ID is not found');
 	//2. Update the movie listen
-	movie.name = name;
-	movie.genre = genre;
 
 	res.send(JSON.stringify(movie));
 });
 
 // DELETE THE MOVIE
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
 	//1. Search for the movie
-	const movie = movies.find((movie) => movie.id === +req.params.id);
+	const movie = await Movie.findByIdAndRemove(req.params.id);
 
-	if (!movie) return res.status(404).send('Sorry such a course does not exist');
-
-	const index = movies.indexOf(movie);
-
-	movies.splice(index, 1);
+	if (!movie) return res.status(404).send('Sorry such a movie does not exist');
 
 	//2. Update the movies
-	res.send(JSON.stringify(movies));
+	res.send(JSON.stringify(movie));
 });
 
 module.exports = router;
