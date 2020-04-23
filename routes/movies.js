@@ -1,19 +1,35 @@
 const express = require('express');
 const router = express.Router();
-
+const mongoose = require('mongoose');
 const validateMovie = require('./../middleware/Helpers');
 router.use(express.json());
 
-const movies = [
+const movieShema = new mongoose.Schema({
+	name: {
+		type: String,
+		required: true,
+		minLength: 3,
+		maxLength: 50,
+	},
+	genre: {
+		type: String,
+		required: true,
+		minLength: 3,
+		maxLength: 50,
+	},
+});
+
+const Movie = new mongoose.model('Movie', movieShema);
+/*const movies = [
 	{ id: 1, genre: 'Action', name: 'Die Hard' },
 	{ id: 2, genre: 'Commedy', name: 'Wedding Ringer' },
 	{ id: 3, genre: 'Thriler', name: 'Pandemic' },
-];
+];*/
 
 // Routes for showing all Movies
 router.get('/', (req, res) => {
-	res.send(JSON.stringify(movies));
-	res.end();
+	const movies = await Movie.find().sort('genre')
+	res.send(movies);
 });
 
 // Routes for showing One Movie based on ID
