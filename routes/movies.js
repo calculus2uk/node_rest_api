@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
 // Routes for showing One Movie based on ID
 router.get('/:id', (req, res) => {
 	//1. Check if the movie exist
-	const id = +req.params.id;
+
 	const movie = movies.find((movie) => movie.id === id);
 
 	//2. If not return a 404 error
@@ -52,7 +52,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Route for creating a movie
-router.post('/', (req, res) => {
+router.post('/',  async (req, res) => {
 	let { name, genre } = req.body;
 
 	//1. Validate the movie input / parameters from the user
@@ -61,11 +61,10 @@ router.post('/', (req, res) => {
 	if (error) return res.status(400).send(error.details[0].message);
 
 	//2. Update the movie listen
-	let id = movies.length + 1;
-	const newMovie = { id, name, genre };
-	movies.push(newMovie);
-
-	res.send(JSON.stringify(newMovie));
+	
+	let newMovie = new Movie( { name, genre });
+	newMovie =  await newMovie.save()
+	res.send(newMovie);
 });
 
 // Route for Updating a movie
