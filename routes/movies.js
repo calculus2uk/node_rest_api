@@ -27,8 +27,8 @@ const Movie = new mongoose.model('Movie', movieShema);
 ];*/
 
 // Routes for showing all Movies
-router.get('/', (req, res) => {
-	const movies = await Movie.find().sort('genre')
+router.get('/', async (req, res) => {
+	const movies = await Movie.find().sort('genre');
 	res.send(movies);
 });
 
@@ -52,7 +52,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Route for creating a movie
-router.post('/',  async (req, res) => {
+router.post('/', async (req, res) => {
 	let { name, genre } = req.body;
 
 	//1. Validate the movie input / parameters from the user
@@ -61,24 +61,27 @@ router.post('/',  async (req, res) => {
 	if (error) return res.status(400).send(error.details[0].message);
 
 	//2. Update the movie listen
-	
-	let newMovie = new Movie( { name, genre });
-	newMovie =  await newMovie.save()
+
+	let newMovie = new Movie({ name, genre });
+	newMovie = await newMovie.save();
 	res.send(newMovie);
 });
 
 // Route for Updating a movie
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
 	let { name, genre } = req.body;
 
-	//1. Search for the movie
-	const movie = movies.find((movie) => movie.id === +req.params.id);
-
-	//2. Validate the movie input / parameters from the user
+	//1. Validate the movie input / parameters from the user
 	const { error } = validateMovie(name, genre);
-
 	if (error) return res.status(400).send(error.details[0].message);
 
+	const movie = await Movie.findByIdAndUpdate(
+		req.params.id,
+		{ name, genre },
+		{ new: true },
+	);
+
+	if (!movie) return res.status(400).send('The movie ID is not found');
 	//2. Update the movie listen
 	movie.name = name;
 	movie.genre = genre;
