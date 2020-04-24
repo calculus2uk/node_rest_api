@@ -26,4 +26,17 @@ function validateUser(name, email, password) {
 	return schema.validate({ name, email, password });
 }
 
-module.exports = { validateMovie, validateCustomer, validateUser };
+function validateUserAuth(email, password) {
+	const schema = Joi.object({
+		email: Joi.string().min(3).max(255).required().email(),
+		password: Joi.string().min(3).max(1024).required(),
+	});
+	return schema.validate({ email, password });
+}
+
+module.exports = {
+	validateMovie,
+	validateCustomer,
+	validateUser,
+	validateUserAuth,
+};
