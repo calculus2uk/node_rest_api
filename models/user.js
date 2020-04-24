@@ -19,6 +19,5 @@ module.exports = mongoose.model('User', {
 		required: true,
 		minLength: 3,
 		maxLength: 1024,
-		unique: true,
 	},
 });
