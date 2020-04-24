@@ -1,11 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { validateUser } = require('./../middleware/Helpers');
 router.use(express.json());
 
-// Create a User
+const jwtPRIVATEKEY = process.env.jwtPRIVATEKEY || 'privateTokenKey';
+// Create a new User
 router.post('/', async (req, res) => {
 	let { name, email, password } = req.body;
 
@@ -20,8 +22,11 @@ router.post('/', async (req, res) => {
 	const salt = await bcrypt.genSalt(10);
 	user.password = await bcrypt.hash(user.password, salt);
 	await user.save();
+	const token = jwt.sign({ _id: user._id }, jwtPRIVATEKEY);
 
-	res.send({ name: user.name, email: user.email });
+	res
+		.header('x-auth-token', token)
+		.send({ name: user.name, email: user.email });
 });
 
 module.exports = router;

@@ -1,10 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
 const { validateUserAuth } = require('./../middleware/Helpers');
-router.use(express.json());
 
+router.use(express.json());
+const jwtPRIVATEKEY = process.env.jwtPRIVATEKEY || 'privateTokenKey';
 // Create a User
 router.post('/', async (req, res) => {
 	let { email, password } = req.body;
@@ -20,7 +22,8 @@ router.post('/', async (req, res) => {
 
 	if (!validPassword) return res.status(400).send('Invalid Email or password');
 
-	res.send('Huray');
+	const token = jwt.sign({ _id: user._id }, jwtPRIVATEKEY);
+	res.send(token);
 });
 
 module.exports = router;
